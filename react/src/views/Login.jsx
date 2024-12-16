@@ -5,30 +5,36 @@ import {useStateContext} from "../context/ContextProvider.jsx";
 import { useState } from "react";
 
 export default function Login() {
-  const emailRef = createRef()
-  const passwordRef = createRef()
-  const { setUser, setToken } = useStateContext()
-  const [message, setMessage] = useState(null)
+  const emailRef = createRef();  // Create a reference for the email input field
+  const passwordRef = createRef();  // Create a reference for the password input field
+  const { setUser, setToken } = useStateContext();  // Destructure to get setUser and setToken functions from context
+  const [message, setMessage] = useState(null);  // Manage local state for error message
 
+  // Handle form submission
   const onSubmit = ev => {
-    ev.preventDefault()
+    ev.preventDefault();  // Prevent the default form submission behavior
 
+    // Prepare the payload with email and password from form inputs
     const payload = {
       email: emailRef.current.value,
       password: passwordRef.current.value,
-    }
+    };
+
+    // Make POST request to the login API
     axiosClient.post('/login', payload)
-      .then(({data}) => {
-        setUser(data.user)
+      .then(({ data }) => {
+        // On success, set the user and token in context
+        setUser(data.user);
         setToken(data.token);
       })
       .catch((err) => {
+        // Handle errors, particularly validation errors with status 422
         const response = err.response;
         if (response && response.status === 422) {
-          setMessage(response.data.message)
+          setMessage(response.data.message);  // Set error message from response
         }
-      })
-  }
+      });
+  };
 
   return (
     <div className="login-signup-form animated fadeInDown">
@@ -36,18 +42,24 @@ export default function Login() {
         <form onSubmit={onSubmit}>
           <h1 className="title">Login into your account</h1>
 
-          {message &&
+          {/* Display error message if there's one */}
+          {message && 
             <div className="alert">
-              <p>{message}</p>
+              <p>{message}</p>  {/* Display the error message */}
             </div>
           }
 
-          <input ref={emailRef} type="email" placeholder="Email"/>
-          <input ref={passwordRef} type="password" placeholder="Password"/>
+          {/* Input fields for email and password */}
+          <input ref={emailRef} type="email" placeholder="Email" />
+          <input ref={passwordRef} type="password" placeholder="Password" />
+
+          {/* Submit button */}
           <button className="btn btn-block">Login</button>
+
+          {/* Link to signup page if the user doesn't have an account */}
           <p className="message">Not registered? <Link to="/signup">Create an account</Link></p>
         </form>
       </div>
     </div>
-  )
+  );
 }
