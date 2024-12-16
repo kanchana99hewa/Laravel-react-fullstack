@@ -1,31 +1,39 @@
-import {Link, Navigate, Outlet} from "react-router-dom";
-import {useStateContext} from "../context/ContextProvider";
+import { Link, Navigate, Outlet } from "react-router-dom";
+import { useStateContext } from "../context/ContextProvider";
 import axiosClient from "../axios-client.js";
-import {useEffect} from "react";
+import { useEffect } from "react";
 
 export default function DefaultLayout() {
-  const {user, token, setUser, setToken, notification} = useStateContext();
+  const { user, token, setUser, setToken, notification } = useStateContext();
 
+  // Always execute the useEffect hook, regardless of the token value.
+  useEffect(() => {
+    if (token) {
+      axiosClient.get('/user')
+        .then(({ data }) => {
+          setUser(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error); // Log the error
+        });
+    }
+  }, [token, setUser]);
+  
+
+  // If there's no token, redirect to login
   if (!token) {
-    return <Navigate to="/login"/>
+    return <Navigate to="/login" />;
   }
 
   const onLogout = ev => {
-    ev.preventDefault()
+    ev.preventDefault();
 
     axiosClient.post('/logout')
       .then(() => {
-        setUser({})
-        setToken(null)
-      })
-  }
-
-  useEffect(() => {
-    axiosClient.get('/user')
-      .then(({data}) => {
-         setUser(data)
-      })
-  }, [])
+        setUser({});
+        setToken(null);
+      });
+  };
 
   return (
     <div id="defaultLayout">
@@ -45,7 +53,7 @@ export default function DefaultLayout() {
           </div>
         </header>
         <main>
-          <Outlet/>
+          <Outlet />
         </main>
         {notification &&
           <div className="notification">
@@ -54,5 +62,5 @@ export default function DefaultLayout() {
         }
       </div>
     </div>
-  )
+  );
 }
