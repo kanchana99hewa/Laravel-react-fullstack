@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";  // Importing React hooks
+import {useEffect, useState} from "react"; 
 import axiosClient from "../axios-client.js";  // Importing the axios client for making HTTP requests
 import {Link} from "react-router-dom";  // Importing Link component from React Router for navigation
 import {useStateContext} from "../context/ContextProvider.jsx";  // Importing the context provider to access global state

@@ -47,7 +47,7 @@ export default function UserForm() {
     if (user.id) {  // If the user has an "id", perform an update
       axiosClient.put(`/users/${user.id}`, user)  // Send a PUT request to update the user
         .then(() => {
-          setNotification('User was successfully updated');  // Show success notification
+          setNotification('User was successfully updated');  
           navigate('/users');  // Redirect to the list of users after successful update
         })
         .catch(err => {
